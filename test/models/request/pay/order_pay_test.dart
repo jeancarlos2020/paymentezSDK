@@ -1,4 +1,3 @@
-import 'package:paymentez_sdk/models/request/pay/installments.dart';
 import 'package:paymentez_sdk/models/request/pay/installments_type.dart';
 import 'package:paymentez_sdk/models/request/pay/order_pay.dart';
 import 'package:test/test.dart';
@@ -6,7 +5,7 @@ import 'package:test/test.dart';
 void main() {
   group(OrderPay, () {
     test('toJson() should return a valid JSON map', () {
-      final orderPay = OrderPay(
+      const orderPay = OrderPay(
         taxPercentage: 10,
         taxableAmount: 100,
         vat: 12,
@@ -27,25 +26,24 @@ void main() {
     });
 
     test('toJson() should include installments if set', () {
-      const installments = Installments.month_3;
-      final orderPay = OrderPay(
+      const orderPay = OrderPay(
         taxPercentage: 10,
         taxableAmount: 100,
         vat: 12,
         amount: 112,
         description: 'Test Order',
         devReference: '123456',
-        installments: installments,
+        installments: 3,
       );
 
       final jsonMap = orderPay.toJson();
 
-      expect(jsonMap, containsPair('installments', installments.value));
+      expect(jsonMap, containsPair('installments', 3));
     });
 
     test('toJson() should include installments_type if set', () {
       const installmentsType = InstallmentsType.type0;
-      final orderPay = OrderPay(
+      const orderPay = OrderPay(
         taxPercentage: 10,
         taxableAmount: 100,
         vat: 12,
@@ -65,22 +63,21 @@ void main() {
   });
 
   test('toJson() should include installments_type and installments', () {
-    const installments = Installments.month_3;
     const installmentsType = InstallmentsType.type0;
-    final orderPay = OrderPay(
+    const orderPay = OrderPay(
       taxPercentage: 10,
       taxableAmount: 100,
       vat: 12,
       amount: 112,
       description: 'Test Order',
       devReference: '123456',
-      installments: installments,
+      installments: 3,
       installmentsType: installmentsType,
     );
 
     final jsonMap = orderPay.toJson();
 
-    expect(jsonMap, containsPair('installments', installments.value));
+    expect(jsonMap, containsPair('installments', 3));
     expect(
       jsonMap,
       containsPair('installments_type', installmentsType.value),
