@@ -6,7 +6,6 @@ import 'package:app_example/page_webview.dart';
 import 'package:app_example/radio_group.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:paymentez_sdk/models/request/card/user_card.dart';
 import 'package:paymentez_sdk/paymentez_controller.dart';
 import 'package:paymentez_sdk/paymentez_sdk.dart';
 
