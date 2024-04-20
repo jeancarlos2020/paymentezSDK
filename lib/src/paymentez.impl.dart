@@ -1,33 +1,23 @@
-// ignore_for_file: avoid_print
-
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 import 'package:paymentez_sdk/models/models.dart';
 import 'package:paymentez_sdk/src/paymentez.inteface.dart';
 import 'package:paymentez_sdk/utils/utils.dart';
-import 'package:paymentez_sdk/utils/utils_browser.dart';
 
 class PaymentezImpl implements IPaymentez {
   PaymentezImpl({
     required this.client,
-    required this.serverApplicationCode,
-    required this.serverAppKey,
-    required this.clientApplicationCode,
-    required this.clientAppKey,
+    required String applicationCode,
+    required String appKey,
     this.isProd = false,
-    this.isPCI = false,
-    PaymentezSecurity paymentezSecurity = const PaymentezSecurity(),
-  }) : _paymentezSecurity = paymentezSecurity;
+  })  : _applicationCode = applicationCode,
+        _appKey = appKey;
 
-  final String serverApplicationCode;
-  final String serverAppKey;
-  final String clientApplicationCode;
-  final String clientAppKey;
-  final PaymentezSecurity _paymentezSecurity;
+  final String _applicationCode;
+  final String _appKey;
 
   final bool isProd;
-  final bool isPCI;
 
   final http.Client client;
 
@@ -37,20 +27,13 @@ class PaymentezImpl implements IPaymentez {
   String get _hostMicro =>
       isProd ? 'pg-micros.paymentez.com' : 'pg-micros-stg.paymentez.com';
 
-  Map<String, String> _headers({bool isServer = false, int? unixtime}) {
-    var appCode = isPCI ? serverApplicationCode : clientApplicationCode;
-    var appKey = isPCI ? serverAppKey : clientAppKey;
-
-    if (!isPCI && isServer) {
-      appCode = serverApplicationCode;
-      appKey = serverAppKey;
-    }
-
-    final authToken = _paymentezSecurity.getAuthToken(
-      appCode: appCode,
-      appKey: appKey,
+  Map<String, String> _headers({int? unixtime}) {
+    final authToken = PaymentezSecurity.getAuthToken(
+      appCode: _applicationCode,
+      appKey: _appKey,
       unixtime: unixtime,
     );
+
     return {'Auth-Token': authToken, 'Content-Type': 'application/json'};
   }
 
@@ -82,7 +65,7 @@ class PaymentezImpl implements IPaymentez {
     final url = Uri.https(_host, '/v2/card/list', {'uid': userID});
     final response = await client.get(
       url,
-      headers: _headers(isServer: true),
+      headers: _headers(),
     );
 
     final body = json.decode(response.body) as Map<String, dynamic>;
@@ -113,14 +96,14 @@ class PaymentezImpl implements IPaymentez {
       ),
       origin: 'SDK_JS',
       antifraud: Antifraud(
-        sessionId: _paymentezSecurity.getSessionId(),
+        sessionId: PaymentezSecurity.getSessionId(),
         location: Uri.https(_host).toString(),
         userAgent: UtilsBrowser.getUserAgent(card.userAgent),
       ),
     );
 
     final url = Uri.https(_host, '/v3/card/generate_tokenize/');
-    final headers = _headers(isServer: true, unixtime: unixtimeResp!.unixtime);
+    final headers = _headers(unixtime: unixtimeResp.unixtime);
     final jsonBody = json.encode(model.toJson());
 
     final response = await client.post(
@@ -143,7 +126,7 @@ class PaymentezImpl implements IPaymentez {
 
     final response = await client.get(
       url,
-      headers: _headers(isServer: true),
+      headers: _headers(),
     );
 
     final body = json.decode(response.body) as Map<String, dynamic>;
@@ -163,7 +146,7 @@ class PaymentezImpl implements IPaymentez {
 
     final response = await client.post(
       url,
-      headers: _headers(isServer: true),
+      headers: _headers(),
       body: json.encode(deleteCardRequest.toJson()),
     );
 
@@ -182,7 +165,7 @@ class PaymentezImpl implements IPaymentez {
 
     final response = await client.post(
       url,
-      headers: _headers(isServer: true),
+      headers: _headers(),
       body: json.encode(payRequest.toJson()),
     );
 

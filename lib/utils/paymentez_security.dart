@@ -3,9 +3,9 @@ import 'dart:convert';
 import 'package:crypto/crypto.dart';
 
 class PaymentezSecurity {
-  const PaymentezSecurity();
+  const PaymentezSecurity._();
 
-  String getAuthToken({
+  static String getAuthToken({
     required String appCode,
     required String appKey,
     int? unixtime,
@@ -21,7 +21,7 @@ class PaymentezSecurity {
     return authToken;
   }
 
-  String getSessionId({
+  static String getSessionId({
     int? microsecondsSinceEpoch,
   }) {
     return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replaceAllMapped(
