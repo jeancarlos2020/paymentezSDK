@@ -1,6 +1,6 @@
 import 'package:paymentez_sdk/models/request/card/user_card.dart';
 
-sealed class UserCardFactory {
+sealed class UserCardMock {
   static UserCard create({
     String? id,
     String? email,

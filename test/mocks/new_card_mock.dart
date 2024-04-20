@@ -1,6 +1,6 @@
 import 'package:paymentez_sdk/models/request/card/new_card.dart';
 
-sealed class NewCardFactory {
+sealed class NewCardMock {
   static NewCard create({
     String? number,
     String? cvc,

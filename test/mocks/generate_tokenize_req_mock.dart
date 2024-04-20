@@ -2,21 +2,18 @@ import 'package:paymentez_sdk/models/request/antifraud.dart';
 import 'package:paymentez_sdk/models/request/card_request.dart';
 import 'package:paymentez_sdk/models/request/tokenize/generate_tokenize_req.dart';
 import 'package:paymentez_sdk/models/request/tokenize/tokenize_configuration.dart';
-import 'package:paymentez_sdk/utils/utils_browser.dart';
+import 'package:paymentez_sdk/utils/utils.dart';
 
-import '../mocks/mock_paymentez_security.dart';
-import 'card_request_factory.dart';
+import 'card_request_mock.dart';
 
-sealed class GenerateTokenizeReqFactory {
+sealed class GenerateTokenizeReqMock {
   static GenerateTokenizeReq create({
     CardRequest? card,
     String? defaultCountry,
     String? origin,
     String? host,
   }) {
-    final cardRequest = card ?? CardRequestFactory.create();
-
-    final securityMock = MockPaymentezSecurity();
+    final cardRequest = card ?? CardRequestMock.create();
 
     return GenerateTokenizeReq(
       locale: cardRequest.locale,
@@ -27,7 +24,7 @@ sealed class GenerateTokenizeReqFactory {
       ),
       origin: origin ?? 'SDK_JS',
       antifraud: Antifraud(
-        sessionId: securityMock.getSessionId(),
+        sessionId: PaymentezSecurity.getSessionId(),
         location: Uri.https(host ?? 'ccapi-stg.paymentez.com').toString(),
         userAgent: UtilsBrowser.getUserAgent(cardRequest.userAgent),
       ),
