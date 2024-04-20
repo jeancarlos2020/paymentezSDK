@@ -20,8 +20,16 @@ class PlatformWrapper implements PlatformInterface {
   @override
   bool get isLinux => Platform.isLinux;
 
-  // @override
-  // bool get isWeb => kIsWeb;
+  @override
+  bool get isWeb {
+    final isMobile = Platform.isAndroid || Platform.isIOS;
+    final desktop = Platform.isWindows ||
+        Platform.isMacOS ||
+        Platform.isFuchsia ||
+        Platform.isLinux;
+
+    return !isMobile && !desktop;
+  }
 
   @override
   bool get isWindows => Platform.isWindows;

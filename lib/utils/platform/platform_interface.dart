@@ -5,5 +5,5 @@ abstract class PlatformInterface {
   bool get isLinux;
   bool get isWindows;
   bool get isFuchsia;
-  // bool get isWeb;
+  bool get isWeb;
 }
