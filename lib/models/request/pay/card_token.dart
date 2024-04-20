@@ -1,5 +1,7 @@
-class CardToken {
-  CardToken({
+import 'package:equatable/equatable.dart';
+
+class CardToken extends Equatable {
+  const CardToken({
     required this.token,
   });
 
@@ -8,4 +10,7 @@ class CardToken {
   Map<String, dynamic> toJson() => {
         'token': token,
       };
+
+  @override
+  List<Object> get props => [token];
 }

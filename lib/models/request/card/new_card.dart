@@ -1,5 +1,7 @@
-class NewCard {
-  NewCard({
+import 'package:equatable/equatable.dart';
+
+class NewCard extends Equatable {
+  const NewCard({
     required this.number,
     required this.holderName,
     required this.expiryMonth,
@@ -7,11 +9,11 @@ class NewCard {
     required this.cvc,
   });
 
-  String number;
-  String holderName;
-  int expiryMonth;
-  int expiryYear;
-  String cvc;
+  final String number;
+  final String holderName;
+  final int expiryMonth;
+  final int expiryYear;
+  final String cvc;
 
   Map<String, dynamic> toJson() => {
         'number': number,
@@ -20,4 +22,15 @@ class NewCard {
         'expiry_year': expiryYear,
         'cvc': cvc,
       };
+
+  @override
+  List<Object> get props {
+    return [
+      number,
+      holderName,
+      expiryMonth,
+      expiryYear,
+      cvc,
+    ];
+  }
 }

@@ -1,10 +1,11 @@
+import 'package:equatable/equatable.dart';
 import 'package:paymentez_sdk/models/request/antifraud.dart';
 import 'package:paymentez_sdk/models/request/card/user_card.dart';
 import 'package:paymentez_sdk/models/request/tokenize/tokenize_configuration.dart';
 import 'package:paymentez_sdk/utils/utils.dart';
 
-class GenerateTokenizeReq {
-  GenerateTokenizeReq({
+class GenerateTokenizeReq extends Equatable {
+  const GenerateTokenizeReq({
     required this.locale,
     required this.user,
     required this.configuration,
@@ -35,4 +36,15 @@ class GenerateTokenizeReq {
         'origin': origin,
         'antifraud': antifraud.toJson(),
       };
+
+  @override
+  List<Object> get props {
+    return [
+      locale,
+      user,
+      configuration,
+      origin,
+      antifraud,
+    ];
+  }
 }

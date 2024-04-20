@@ -1,5 +1,7 @@
-class Antifraud {
-  Antifraud({
+import 'package:equatable/equatable.dart';
+
+class Antifraud extends Equatable {
+  const Antifraud({
     required this.sessionId,
     required this.location,
     required this.userAgent,
@@ -20,4 +22,7 @@ class Antifraud {
         'location': location,
         'user_agent': userAgent,
       };
+
+  @override
+  List<Object> get props => [sessionId, location, userAgent];
 }

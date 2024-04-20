@@ -1,7 +1,8 @@
+import 'package:equatable/equatable.dart';
 import 'package:paymentez_sdk/utils/utils.dart';
 
-class TokenizeConfiguration {
-  TokenizeConfiguration({
+class TokenizeConfiguration extends Equatable {
+  const TokenizeConfiguration({
     required this.defaultCountry,
     required this.requireBillingAddress,
   });
@@ -19,4 +20,7 @@ class TokenizeConfiguration {
         'default_country': defaultCountry,
         'require_billing_address': requireBillingAddress,
       };
+
+  @override
+  List<Object> get props => [defaultCountry, requireBillingAddress];
 }

@@ -7,7 +7,6 @@ export 'request/card_request.dart';
 export 'request/delete_card_request.dart';
 export 'request/pay/card_pci.dart';
 export 'request/pay/card_token.dart';
-export 'request/pay/installments.dart';
 export 'request/pay/installments_type.dart';
 export 'request/pay/order_pay.dart';
 export 'request/pay/user_pay.dart';

@@ -1,7 +1,8 @@
+import 'package:equatable/equatable.dart';
 import 'package:paymentez_sdk/models/request/card/user_card.dart';
 
-class CardRequest {
-  CardRequest({
+class CardRequest extends Equatable {
+  const CardRequest({
     required this.user,
     required this.locale,
     required this.requireBillingAddress,
@@ -19,4 +20,12 @@ class CardRequest {
         'requireBillingAddress': requireBillingAddress,
         if (userAgent != null) 'userAgent': userAgent,
       };
+
+  @override
+  List<Object?> get props => [
+        user,
+        locale,
+        requireBillingAddress,
+        userAgent,
+      ];
 }

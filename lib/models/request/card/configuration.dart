@@ -1,7 +1,8 @@
+import 'package:equatable/equatable.dart';
 import 'package:paymentez_sdk/utils/utils.dart';
 
-class Configuration {
-  Configuration({
+class Configuration extends Equatable {
+  const Configuration({
     required this.defaultCountry,
     required this.requireBillingAddress,
   });
@@ -18,4 +19,7 @@ class Configuration {
         'default_country': defaultCountry,
         'require_billing_address': requireBillingAddress,
       };
+
+  @override
+  List<Object> get props => [defaultCountry, requireBillingAddress];
 }

@@ -1,5 +1,7 @@
-class UserCard {
-  UserCard({
+import 'package:equatable/equatable.dart';
+
+class UserCard extends Equatable {
+  const UserCard({
     required this.id,
     required this.email,
   });
@@ -16,4 +18,7 @@ class UserCard {
         'id': id,
         'email': email,
       };
+
+  @override
+  List<Object> get props => [id, email];
 }
