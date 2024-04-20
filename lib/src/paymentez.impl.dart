@@ -4,7 +4,6 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 import 'package:paymentez_sdk/models/models.dart';
-import 'package:paymentez_sdk/models/request/generate_tokenize_req.dart';
 import 'package:paymentez_sdk/src/paymentez.inteface.dart';
 import 'package:paymentez_sdk/utils/utils.dart';
 import 'package:paymentez_sdk/utils/utils_browser.dart';
@@ -18,12 +17,14 @@ class PaymentezImpl implements IPaymentez {
     required this.clientAppKey,
     this.isProd = false,
     this.isPCI = false,
-  });
+    PaymentezSecurity paymentezSecurity = const PaymentezSecurity(),
+  }) : _paymentezSecurity = paymentezSecurity;
 
   final String serverApplicationCode;
   final String serverAppKey;
   final String clientApplicationCode;
   final String clientAppKey;
+  final PaymentezSecurity _paymentezSecurity;
 
   final bool isProd;
   final bool isPCI;
@@ -45,7 +46,7 @@ class PaymentezImpl implements IPaymentez {
       appKey = serverAppKey;
     }
 
-    final authToken = PaymentezSecurity.getAuthToken(
+    final authToken = _paymentezSecurity.getAuthToken(
       appCode: appCode,
       appKey: appKey,
       unixtime: unixtime,
@@ -106,24 +107,26 @@ class PaymentezImpl implements IPaymentez {
     final model = GenerateTokenizeReq(
       locale: card.locale,
       user: card.user,
-      configuration: Configuration(
+      configuration: TokenizeConfiguration(
         defaultCountry: 'ECU',
         requireBillingAddress: card.requireBillingAddress,
       ),
       origin: 'SDK_JS',
       antifraud: Antifraud(
-        sessionId: PaymentezSecurity.getSessionId(),
+        sessionId: _paymentezSecurity.getSessionId(),
         location: Uri.https(_host).toString(),
         userAgent: UtilsBrowser.getUserAgent(card.userAgent),
       ),
     );
 
     final url = Uri.https(_host, '/v3/card/generate_tokenize/');
+    final headers = _headers(isServer: true, unixtime: unixtimeResp!.unixtime);
+    final jsonBody = json.encode(model.toJson());
 
     final response = await client.post(
       url,
-      headers: _headers(isServer: true, unixtime: unixtimeResp!.unixtime),
-      body: json.encode(model.toJson()),
+      headers: headers,
+      body: jsonBody,
     );
 
     final body = json.decode(response.body) as Map<String, dynamic>;
