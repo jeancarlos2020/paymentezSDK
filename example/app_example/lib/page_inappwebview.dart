@@ -19,7 +19,8 @@ class PageInappWebview extends StatefulWidget {
   State<PageInappWebview> createState() => _PageInappWebviewState();
 }
 
-class _PageInappWebviewState extends State<PageInappWebview> {
+class _PageInappWebviewState extends State<PageInappWebview>
+    with WidgetsBindingObserver {
   InAppWebViewController? ctrl;
 
   void _onWebViewCreated(InAppWebViewController controller) {
