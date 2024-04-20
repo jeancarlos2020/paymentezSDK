@@ -11,6 +11,9 @@ class FormCardResponse {
     return FormCardResponse(
       type: json['type'] as String,
       message: json['message'] as String,
+      data: json['data'] == null
+          ? null
+          : CardRegister.fromJson(json['data'] as Map<String, dynamic>),
     );
   }
 

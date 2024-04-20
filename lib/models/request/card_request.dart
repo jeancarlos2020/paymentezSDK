@@ -15,5 +15,8 @@ class CardRequest {
 
   Map<String, dynamic> toJson() => {
         'user': user.toJson(),
+        'locale': locale,
+        'requireBillingAddress': requireBillingAddress,
+        if (userAgent != null) 'userAgent': userAgent,
       };
 }

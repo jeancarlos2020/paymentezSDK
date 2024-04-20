@@ -13,6 +13,6 @@ class DeleteCardRequest {
         },
         'user': <String, dynamic>{
           'id': userId,
-        }
+        },
       };
 }
