@@ -3,9 +3,9 @@ import 'dart:convert';
 import 'package:crypto/crypto.dart';
 
 class PaymentezSecurity {
-  const PaymentezSecurity._();
+  const PaymentezSecurity();
 
-  static String getAuthToken({
+  String getAuthToken({
     required String appCode,
     required String appKey,
     int? unixtime,
@@ -21,11 +21,15 @@ class PaymentezSecurity {
     return authToken;
   }
 
-  static String getSessionId() {
+  String getSessionId({
+    int? microsecondsSinceEpoch,
+  }) {
     return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replaceAllMapped(
       RegExp('[xy]'),
       (match) {
-        final r = DateTime.now().microsecondsSinceEpoch & 0xf;
+        final r =
+            (microsecondsSinceEpoch ?? DateTime.now().microsecondsSinceEpoch) &
+                0xf;
         final v = match.group(0) == 'x' ? r : (r & 0x3 | 0x8);
         return v.toRadixString(16);
       },

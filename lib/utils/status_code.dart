@@ -1,4 +1,5 @@
 // HTTP status codes as registered with IANA.
+// coverage:ignore-file
 // See: https://www.iana.org/assignments/http-status-codes/http-status-codes.xhtml
 class HttpStatus {
   static const int continue_ = 100; // RFC 9110, 15.2.1
