@@ -8,7 +8,7 @@ void main() {
       const appKey = 'your_app_key';
       const unixtime = 1634567890; // Replace with your desired unixtime
 
-      final authToken = const PaymentezSecurity().getAuthToken(
+      final authToken = PaymentezSecurity.getAuthToken(
         appCode: appCode,
         appKey: appKey,
         unixtime: unixtime,
@@ -20,7 +20,7 @@ void main() {
     });
 
     test('getSessionId should return a valid session ID', () {
-      final sessionId = const PaymentezSecurity().getSessionId();
+      final sessionId = PaymentezSecurity.getSessionId();
 
       // Add your assertions here to validate the generated session ID
       expect(sessionId, isNotEmpty);
