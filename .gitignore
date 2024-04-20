@@ -3,6 +3,7 @@
 pubspec.lock
 *.metadata
 *.zshrc
+build/*
 
 /coverage
 .vscode/*
