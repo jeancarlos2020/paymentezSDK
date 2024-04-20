@@ -2,7 +2,7 @@ import 'package:paymentez_sdk/utils/platform/platform_imp.dart';
 import 'package:paymentez_sdk/utils/platform/platform_interface.dart';
 
 class UtilsBrowser {
-  UtilsBrowser({this.isProd = false});
+  const UtilsBrowser({this.isProd = false});
 
   final bool isProd;
 
@@ -90,6 +90,21 @@ class UtilsBrowser {
     if (platform.isMacOS) {
       userAgent =
           'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36';
+    }
+
+    if (platform.isLinux) {
+      userAgent =
+          'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.5993.111 Safari/537.36 OPR/103.0.4928.26';
+    }
+
+    if (platform.isWeb) {
+      userAgent =
+          'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36';
+    }
+
+    if (platform.isFuchsia) {
+      userAgent =
+          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/93.0.0.0 Safari/537.36';
     }
 
     return value ?? userAgent;
