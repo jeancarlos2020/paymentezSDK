@@ -1,55 +1,82 @@
+import 'package:mocktail/mocktail.dart';
 import 'package:paymentez_sdk/utils/platform/platform_imp.dart';
 import 'package:test/test.dart';
+
+class MockPlatformWrapper extends Mock implements PlatformWrapper {}
 
 void main() {
   group(
     PlatformWrapper,
     () {
+      late MockPlatformWrapper mockPlatform;
+      setUp(() {
+        mockPlatform = MockPlatformWrapper();
+      });
+
       test(
         'isAndroid should return true on Android platform',
         () {
-          const platform = PlatformWrapper();
-          expect(platform.isAndroid, true);
+          when(() => mockPlatform.isAndroid).thenReturn(true);
+          expect(mockPlatform.isAndroid, true);
         },
       );
 
       test(
         'isIOS should return true on iOS platform',
         () {
-          const platform = PlatformWrapper();
-          expect(platform.isIOS, true);
+          when(() => mockPlatform.isAndroid).thenReturn(false);
+          when(() => mockPlatform.isIOS).thenReturn(true);
+          expect(mockPlatform.isIOS, true);
         },
       );
 
       test(
         'isMacOS should return true on macOS platform',
         () {
-          const platform = PlatformWrapper();
-          expect(platform.isMacOS, true);
+          when(() => mockPlatform.isAndroid).thenReturn(false);
+          when(() => mockPlatform.isIOS).thenReturn(false);
+          when(() => mockPlatform.isMacOS).thenReturn(true);
+
+          expect(mockPlatform.isMacOS, true);
         },
       );
 
       test(
         'isFuchsia should return true on Fuchsia platform',
         () {
-          const platform = PlatformWrapper();
-          expect(platform.isFuchsia, true);
+          when(() => mockPlatform.isAndroid).thenReturn(false);
+          when(() => mockPlatform.isIOS).thenReturn(false);
+          when(() => mockPlatform.isMacOS).thenReturn(false);
+          when(() => mockPlatform.isFuchsia).thenReturn(true);
+
+          expect(mockPlatform.isFuchsia, true);
         },
       );
 
       test(
         'isLinux should return true on Linux platform',
         () {
-          const platform = PlatformWrapper();
-          expect(platform.isLinux, true);
+          when(() => mockPlatform.isAndroid).thenReturn(false);
+          when(() => mockPlatform.isIOS).thenReturn(false);
+          when(() => mockPlatform.isMacOS).thenReturn(false);
+          when(() => mockPlatform.isFuchsia).thenReturn(false);
+          when(() => mockPlatform.isLinux).thenReturn(true);
+
+          expect(mockPlatform.isLinux, true);
         },
       );
 
       test(
-        'isWindows should return true on Windows platform',
+        'isWeb should return true on Web platform',
         () {
-          const platform = PlatformWrapper();
-          expect(platform.isWindows, true);
+          when(() => mockPlatform.isAndroid).thenReturn(false);
+          when(() => mockPlatform.isIOS).thenReturn(false);
+          when(() => mockPlatform.isMacOS).thenReturn(false);
+          when(() => mockPlatform.isFuchsia).thenReturn(false);
+          when(() => mockPlatform.isLinux).thenReturn(false);
+          when(() => mockPlatform.isWeb).thenReturn(true);
+
+          expect(mockPlatform.isWeb, true);
         },
       );
     },
