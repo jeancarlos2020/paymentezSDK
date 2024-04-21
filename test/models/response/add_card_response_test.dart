@@ -71,5 +71,31 @@ void main() {
       expect(cardJson['number'], '************1234');
       expect(cardJson['message'], 'Success');
     });
+
+    // test('props should not be empty', () {
+    //   // Test data
+    //   final cardRegister = CardRegister(
+    //     bin: '123456',
+    //     status: 'active',
+    //     token: 'abc123',
+    //     holderName: 'John Doe',
+    //     expiryYear: '2023',
+    //     expiryMonth: '12',
+    //     transactionReference: '1234567890',
+    //     type: 'visa',
+    //     number: '************1234',
+    //     message: 'Success',
+    //   );
+    //   final response = AddCardResponse(
+    //     card: cardRegister,
+    //     tokenizeURL: 'https://example.com/tokenize',
+    //   );
+
+    //   final props = response.props;
+
+    //   // Assertions
+
+    //   expect(props, isNotEmpty);
+    // });
   });
 }

@@ -4,7 +4,7 @@ import 'package:test/test.dart';
 void main() {
   group(UserCard, () {
     test('Create instance', () {
-      final userCard = UserCard(
+      const userCard = UserCard(
         id: '123',
         email: 'email@email.com',
       );
@@ -25,7 +25,7 @@ void main() {
     });
 
     test('toJson should return a valid JSON map', () {
-      final userCard = UserCard(
+      const userCard = UserCard(
         id: '123',
         email: 'test@example.com',
       );
@@ -34,6 +34,17 @@ void main() {
 
       expect(json['id'], equals('123'));
       expect(json['email'], equals('test@example.com'));
+    });
+
+    test('props should not be empty', () {
+      const userCard = UserCard(
+        id: '123',
+        email: 'test@example.com',
+      );
+
+      final props = userCard.props;
+
+      expect(props, isNotEmpty);
     });
   });
 }

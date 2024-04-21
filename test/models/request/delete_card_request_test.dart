@@ -5,7 +5,7 @@ void main() {
   group(DeleteCardRequest, () {
     test('toJson should return the correct JSON representation', () {
       // Arrange
-      final deleteCardRequest = DeleteCardRequest(
+      const deleteCardRequest = DeleteCardRequest(
         cardToken: 'cardToken',
         userId: 'userId',
       );
@@ -18,6 +18,20 @@ void main() {
         'card': {'token': 'cardToken'},
         'user': {'id': 'userId'},
       });
+    });
+
+    test('props should not be empty', () {
+      // Arrange
+      const deleteCardRequest = DeleteCardRequest(
+        cardToken: 'cardToken',
+        userId: 'userId',
+      );
+
+      // Act
+      final props = deleteCardRequest.props;
+
+      // Assert
+      expect(props, isNotEmpty);
     });
   });
 }

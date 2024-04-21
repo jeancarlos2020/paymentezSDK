@@ -16,7 +16,7 @@ void main() {
     });
 
     test('toJson should return a valid JSON object', () {
-      final configuration = TokenizeConfiguration(
+      const configuration = TokenizeConfiguration(
         defaultCountry: 'US',
         requireBillingAddress: true,
       );
@@ -25,6 +25,17 @@ void main() {
 
       expect(json['default_country'], 'US');
       expect(json['require_billing_address'], true);
+    });
+
+    test('props should not be empty', () {
+      const configuration = TokenizeConfiguration(
+        defaultCountry: 'US',
+        requireBillingAddress: true,
+      );
+
+      final props = configuration.props;
+
+      expect(props, isNotEmpty);
     });
   });
 }

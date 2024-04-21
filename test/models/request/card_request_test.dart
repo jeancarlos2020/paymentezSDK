@@ -10,11 +10,11 @@ void main() {
     () {
       test('toJson should return a valid JSON map', () {
         // Arrange
-        final userCard = UserCard(
+        const userCard = UserCard(
           id: '0',
           email: 'email@email.com',
         );
-        final cardRequest = CardRequest(
+        const cardRequest = CardRequest(
           user: userCard,
           locale: 'en_US',
           requireBillingAddress: true,
@@ -38,11 +38,11 @@ void main() {
         'toJson should return a valid JSON map without optional fields',
         () {
           // Arrange
-          final userCard = UserCard(
+          const userCard = UserCard(
             id: '0',
             email: 'email@email.com',
           );
-          final cardRequest = CardRequest(
+          const cardRequest = CardRequest(
             user: userCard,
             locale: 'en_US',
             requireBillingAddress: false,
@@ -62,6 +62,28 @@ void main() {
           expect(json['locale'], equals('en_US'));
           expect(json['requireBillingAddress'], equals(false));
           expect(json.containsKey('userAgent'), equals(false));
+        },
+      );
+
+      test(
+        'props should not be empty',
+        () {
+          const userCard = UserCard(
+            id: '0',
+            email: 'email@email.com',
+          );
+          const cardRequest = CardRequest(
+            user: userCard,
+            locale: 'en_US',
+            requireBillingAddress: true,
+            userAgent: 'Mozilla/5.0',
+          );
+
+          // Act
+          final props = cardRequest.props;
+
+          // Assert
+          expect(props, isNotEmpty);
         },
       );
     },

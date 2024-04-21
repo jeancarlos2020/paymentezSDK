@@ -4,7 +4,7 @@ import 'package:test/test.dart';
 void main() {
   group(CardPCI, () {
     test('Create instance', () {
-      final card = CardPCI(
+      const card = CardPCI(
         number: '4111111111111111',
         holderName: 'John Doe',
         expiryMonth: 12,
@@ -20,7 +20,7 @@ void main() {
     });
     test('toJson should return a valid JSON map', () {
       // Arrange
-      final card = CardPCI(
+      const card = CardPCI(
         number: '4111111111111111',
         holderName: 'John Doe',
         expiryMonth: 12,
@@ -38,6 +38,24 @@ void main() {
       expect(json['expiry_month'], equals(12));
       expect(json['expiry_year'], equals(2023));
       expect(json['cvc'], equals('123'));
+    });
+
+    test('props should not be empty', () {
+      // Arrange
+      const card = CardPCI(
+        number: '4111111111111111',
+        holderName: 'John Doe',
+        expiryMonth: 12,
+        expiryYear: 2023,
+        cvc: '123',
+      );
+
+      // Act
+      final props = card.props;
+
+      // Assert
+
+      expect(props, isNotEmpty);
     });
   });
 }

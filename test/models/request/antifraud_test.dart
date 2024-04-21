@@ -18,7 +18,7 @@ void main() {
     });
 
     test('toJson should return a valid JSON map', () {
-      final antifraud = Antifraud(
+      const antifraud = Antifraud(
         sessionId: '123456',
         location: 'New York',
         userAgent: 'Mozilla/5.0',
@@ -29,6 +29,18 @@ void main() {
       expect(json['session_id'], '123456');
       expect(json['location'], 'New York');
       expect(json['user_agent'], 'Mozilla/5.0');
+    });
+
+    test('props should not be empty', () {
+      const antifraud = Antifraud(
+        sessionId: '123456',
+        location: 'New York',
+        userAgent: 'Mozilla/5.0',
+      );
+
+      final props = antifraud.props;
+
+      expect(props, isNotEmpty);
     });
   });
 }

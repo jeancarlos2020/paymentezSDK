@@ -5,7 +5,7 @@ void main() {
   group(UserPay, () {
     test('toJson should return a valid JSON map', () {
       // Arrange
-      final userPay = UserPay(
+      const userPay = UserPay(
         id: '123',
         email: 'test@example.com',
         phone: '1234567890',
@@ -20,5 +20,21 @@ void main() {
       expect(json['email'], equals('test@example.com'));
       expect(json['phone'], equals('1234567890'));
     });
+  });
+
+  test('props should not be empty', () {
+    // Arrange
+    const userPay = UserPay(
+      id: '123',
+      email: 'test@example.com',
+      phone: '1234567890',
+    );
+
+    // Act
+    final props = userPay.props;
+
+    // Assert
+
+    expect(props, isNotEmpty);
   });
 }

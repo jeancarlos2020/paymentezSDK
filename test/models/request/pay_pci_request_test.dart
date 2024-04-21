@@ -8,12 +8,12 @@ void main() {
   group(PayPCIRequest, () {
     test('toJson should return a valid JSON map', () {
       // Arrange
-      final userPay = UserPay(
+      const userPay = UserPay(
         id: '123',
         email: 'test@example.com',
         phone: '1234567890',
       );
-      final orderPay = OrderPay(
+      const orderPay = OrderPay(
         taxPercentage: 10,
         taxableAmount: 100,
         vat: 12,
@@ -21,7 +21,7 @@ void main() {
         description: 'Test Order',
         devReference: '123456',
       );
-      final card = CardPCI(
+      const card = CardPCI(
         number: '4111111111111111',
         holderName: 'John Doe',
         expiryMonth: 12,
@@ -29,7 +29,7 @@ void main() {
         cvc: '123',
       );
 
-      final payPCIRequest =
+      const payPCIRequest =
           PayPCIRequest(user: userPay, order: orderPay, card: card);
 
       // Act
@@ -58,6 +58,39 @@ void main() {
       expect(json['card']['expiry_month'], equals(12));
       expect(json['card']['expiry_year'], equals(2023));
       expect(json['card']['cvc'], equals('123'));
+    });
+
+    test('props should not be empty', () {
+      // Arrange
+      const userPay = UserPay(
+        id: '123',
+        email: 'test@example.com',
+        phone: '1234567890',
+      );
+      const orderPay = OrderPay(
+        taxPercentage: 10,
+        taxableAmount: 100,
+        vat: 12,
+        amount: 112,
+        description: 'Test Order',
+        devReference: '123456',
+      );
+      const card = CardPCI(
+        number: '4111111111111111',
+        holderName: 'John Doe',
+        expiryMonth: 12,
+        expiryYear: 2023,
+        cvc: '123',
+      );
+
+      const payPCIRequest =
+          PayPCIRequest(user: userPay, order: orderPay, card: card);
+
+      // Act
+      final props = payPCIRequest.props;
+
+      // Assert
+      expect(props, isNotEmpty);
     });
   });
 }

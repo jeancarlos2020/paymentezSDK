@@ -5,7 +5,7 @@ void main() {
   group(RefundRequest, () {
     test('toJson should return the correct JSON representation', () {
       // Arrange
-      final refundRequest = RefundRequest(transactionID: '0');
+      const refundRequest = RefundRequest(transactionID: '0');
 
       // Act
       final json = refundRequest.toJson();
@@ -16,6 +16,17 @@ void main() {
           'id': '0',
         },
       });
+    });
+
+    test('props should not be empty', () {
+      // Arrange
+      const refundRequest = RefundRequest(transactionID: '0');
+
+      // Act
+      final props = refundRequest.props;
+
+      // Assert
+      expect(props, isNotEmpty);
     });
   });
 }

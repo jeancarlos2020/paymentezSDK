@@ -83,4 +83,19 @@ void main() {
       containsPair('installments_type', installmentsType.value),
     );
   });
+
+  test('props should not be empty', () {
+    const orderPay = OrderPay(
+      taxPercentage: 10,
+      taxableAmount: 100,
+      vat: 12,
+      amount: 112,
+      description: 'Test Order',
+      devReference: '123456',
+    );
+
+    final props = orderPay.props;
+
+    expect(props, isNotEmpty);
+  });
 }

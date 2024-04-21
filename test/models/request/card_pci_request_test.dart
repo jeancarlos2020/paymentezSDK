@@ -8,12 +8,12 @@ import 'package:test/test.dart';
 void main() {
   group(CardPCIRequest, () {
     test('toJson should return a valid JSON map', () {
-      final user = UserCard(
+      const user = UserCard(
         id: '0',
         email: 'test@example.com',
       );
 
-      final card = NewCard(
+      const card = NewCard(
         holderName: 'John Doe',
         number: '1234567890123456',
         expiryMonth: 12,
@@ -21,7 +21,7 @@ void main() {
         cvc: '123',
       );
 
-      final request = CardPCIRequest(user: user, card: card);
+      const request = CardPCIRequest(user: user, card: card);
 
       final jsonMap = request.toJson();
 
@@ -35,6 +35,27 @@ void main() {
       expect(jsonMap['card']['expiry_month'], card.expiryMonth);
       expect(jsonMap['card']['expiry_year'], card.expiryYear);
       expect(jsonMap['card']['cvc'], card.cvc);
+    });
+
+    test('props should not be empty', () {
+      const user = UserCard(
+        id: '0',
+        email: 'test@example.com',
+      );
+
+      const card = NewCard(
+        holderName: 'John Doe',
+        number: '1234567890123456',
+        expiryMonth: 12,
+        expiryYear: 2023,
+        cvc: '123',
+      );
+
+      const request = CardPCIRequest(user: user, card: card);
+
+      final props = request.props;
+
+      expect(props, isNotEmpty);
     });
   });
 }

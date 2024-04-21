@@ -8,7 +8,7 @@ void main() {
       test(
         'Create Configuration',
         () async {
-          final configuration = Configuration(
+          const configuration = Configuration(
             defaultCountry: 'defaultCountry',
             requireBillingAddress: true,
           );
@@ -18,7 +18,7 @@ void main() {
         },
       );
       test('Serialization', () {
-        final configuration = Configuration(
+        const configuration = Configuration(
           defaultCountry: 'defaultCountry',
           requireBillingAddress: true,
         );
@@ -39,6 +39,17 @@ void main() {
 
         expect(configuration.defaultCountry, 'defaultCountry');
         expect(configuration.requireBillingAddress, true);
+      });
+
+      test('Props', () {
+        const configuration = Configuration(
+          defaultCountry: 'defaultCountry',
+          requireBillingAddress: true,
+        );
+
+        final props = configuration.props;
+
+        expect(props, isNotEmpty);
       });
     },
   );

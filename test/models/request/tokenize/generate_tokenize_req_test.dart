@@ -7,23 +7,23 @@ import 'package:test/test.dart';
 void main() {
   group(GenerateTokenizeReq, () {
     test('toJson should return a valid JSON map', () {
-      final user = UserCard(
+      const user = UserCard(
         id: '0',
         email: 'email@email.com',
       );
 
-      final configuration = TokenizeConfiguration(
+      const configuration = TokenizeConfiguration(
         defaultCountry: 'ec',
         requireBillingAddress: true,
       );
 
-      final antifraud = Antifraud(
+      const antifraud = Antifraud(
         location: 'New York',
         sessionId: '123456',
         userAgent: 'Mozilla/5.0',
       );
 
-      final generateTokenizeReq = GenerateTokenizeReq(
+      const generateTokenizeReq = GenerateTokenizeReq(
         locale: 'en',
         user: user,
         configuration: configuration,
@@ -82,6 +82,36 @@ void main() {
       expect(generateTokenizeReq.antifraud.location, 'Los Angeles');
       expect(generateTokenizeReq.antifraud.sessionId, '78910');
       expect(generateTokenizeReq.antifraud.userAgent, 'Mozilla/5.0');
+    });
+
+    test('props should not be empty', () {
+      const user = UserCard(
+        id: '0',
+        email: 'email@email.com',
+      );
+
+      const configuration = TokenizeConfiguration(
+        defaultCountry: 'ec',
+        requireBillingAddress: true,
+      );
+
+      const antifraud = Antifraud(
+        location: 'New York',
+        sessionId: '123456',
+        userAgent: 'Mozilla/5.0',
+      );
+
+      const generateTokenizeReq = GenerateTokenizeReq(
+        locale: 'en',
+        user: user,
+        configuration: configuration,
+        origin: 'app',
+        antifraud: antifraud,
+      );
+
+      final props = generateTokenizeReq.props;
+
+      expect(props, isNotEmpty);
     });
   });
 }
