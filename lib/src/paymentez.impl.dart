@@ -87,6 +87,8 @@ class PaymentezImpl implements IPaymentez {
       return (null, unixtimeErr);
     }
 
+    final utilsBrowser = UtilsBrowser(isProd: isProd);
+
     final model = GenerateTokenizeReq(
       locale: card.locale,
       user: card.user,
@@ -100,7 +102,7 @@ class PaymentezImpl implements IPaymentez {
           unixtime: unixtimeResp!.unixtime,
         ),
         location: Uri.https(_host).toString(),
-        userAgent: UtilsBrowser.getUserAgent(card.userAgent),
+        userAgent: utilsBrowser.getUserAgent(card.userAgent),
       ),
     );
 

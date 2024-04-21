@@ -1,10 +1,13 @@
-import 'package:paymentez_sdk/utils/platform/platform_imp.dart';
-import 'package:paymentez_sdk/utils/platform/platform_interface.dart';
+import 'package:paymentez_sdk/utils/utils.dart';
 
 class UtilsBrowser {
-  const UtilsBrowser({this.isProd = false});
+  const UtilsBrowser({
+    this.isProd = false,
+    PlatformInterface platform = const PlatformWrapper(),
+  }) : _platform = platform;
 
   final bool isProd;
+  final PlatformInterface _platform;
 
   String get _host =>
       isProd ? 'ccapi.paymentez.com' : 'ccapi-stg.paymentez.com';
@@ -72,41 +75,32 @@ class UtilsBrowser {
         ''';
   }
 
-  static String getUserAgent(
-    String? value, {
-    PlatformInterface platform = const PlatformWrapper(),
-  }) {
-    var userAgent = '';
-    if (platform.isAndroid) {
-      userAgent =
-          'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.6312.40 Mobile Safari/537.36';
+  String getUserAgent([String? value]) {
+    if (value != null) {
+      return value;
     }
 
-    if (platform.isIOS) {
-      userAgent =
-          'Mozilla/5.0 (iPhone; CPU iPhone OS 17_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/123.0.6312.52 Mobile/15E148 Safari/604.1';
+    if (_platform.isAndroid) {
+      return 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.6312.40 Mobile Safari/537.36';
     }
 
-    if (platform.isMacOS) {
-      userAgent =
-          'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36';
+    if (_platform.isIOS) {
+      return 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/123.0.6312.52 Mobile/15E148 Safari/604.1';
     }
 
-    if (platform.isLinux) {
-      userAgent =
-          'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.5993.111 Safari/537.36 OPR/103.0.4928.26';
+    if (_platform.isMacOS) {
+      return 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36';
     }
 
-    if (platform.isWeb) {
-      userAgent =
-          'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36';
+    if (_platform.isLinux) {
+      return 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.5993.111 Safari/537.36 OPR/103.0.4928.26';
     }
 
-    if (platform.isFuchsia) {
-      userAgent =
-          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/93.0.0.0 Safari/537.36';
+    if (_platform.isFuchsia) {
+      return 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/93.0.0.0 Safari/537.36';
     }
 
-    return value ?? userAgent;
+    // Use for Platform.isWeb
+    return 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36';
   }
 }

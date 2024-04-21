@@ -27,7 +27,7 @@ sealed class GenerateTokenizeReqMock {
       antifraud: Antifraud(
         sessionId: PaymentezSecurity.getSessionId(unixtime: unixtime),
         location: host ?? 'https://ccapi-stg.paymentez.com',
-        userAgent: UtilsBrowser.getUserAgent(cardRequest.userAgent),
+        userAgent: const UtilsBrowser().getUserAgent(cardRequest.userAgent),
       ),
     );
   }
