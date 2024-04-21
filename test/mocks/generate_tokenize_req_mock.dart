@@ -12,6 +12,7 @@ sealed class GenerateTokenizeReqMock {
     String? defaultCountry,
     String? origin,
     String? host,
+    int? unixtime,
   }) {
     final cardRequest = card ?? CardRequestMock.create();
 
@@ -24,8 +25,8 @@ sealed class GenerateTokenizeReqMock {
       ),
       origin: origin ?? 'SDK_JS',
       antifraud: Antifraud(
-        sessionId: PaymentezSecurity.getSessionId(),
-        location: Uri.https(host ?? 'ccapi-stg.paymentez.com').toString(),
+        sessionId: PaymentezSecurity.getSessionId(unixtime: unixtime),
+        location: host ?? 'https://ccapi-stg.paymentez.com',
         userAgent: UtilsBrowser.getUserAgent(cardRequest.userAgent),
       ),
     );

@@ -8,7 +8,7 @@ sealed class CardRequestMock {
     UserCard? user,
     String? locale,
     bool? requireBillingAddress,
-    String? userAgent = '',
+    String? userAgent = 'mockUserAgent',
   }) {
     return CardRequest(
       user: user ?? UserCardMock.create(),
