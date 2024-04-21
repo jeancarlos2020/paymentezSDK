@@ -22,14 +22,12 @@ class PaymentezSecurity {
   }
 
   static String getSessionId({
-    int? microsecondsSinceEpoch,
+    int? unixtime,
   }) {
     return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replaceAllMapped(
       RegExp('[xy]'),
       (match) {
-        final r =
-            (microsecondsSinceEpoch ?? DateTime.now().microsecondsSinceEpoch) &
-                0xf;
+        final r = (unixtime ?? DateTime.now().microsecondsSinceEpoch) & 0xf;
         final v = match.group(0) == 'x' ? r : (r & 0x3 | 0x8);
         return v.toRadixString(16);
       },

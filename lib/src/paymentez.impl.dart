@@ -96,7 +96,9 @@ class PaymentezImpl implements IPaymentez {
       ),
       origin: 'SDK_JS',
       antifraud: Antifraud(
-        sessionId: PaymentezSecurity.getSessionId(),
+        sessionId: PaymentezSecurity.getSessionId(
+          unixtime: unixtimeResp!.unixtime,
+        ),
         location: Uri.https(_host).toString(),
         userAgent: UtilsBrowser.getUserAgent(card.userAgent),
       ),
@@ -105,7 +107,6 @@ class PaymentezImpl implements IPaymentez {
     final url = Uri.https(_host, '/v3/card/generate_tokenize/');
     final headers = _headers(unixtime: unixtimeResp.unixtime);
     final jsonBody = json.encode(model.toJson());
-
     final response = await client.post(
       url,
       headers: headers,
