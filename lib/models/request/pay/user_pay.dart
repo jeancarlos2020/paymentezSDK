@@ -1,5 +1,7 @@
-class UserPay {
-  UserPay({
+import 'package:equatable/equatable.dart';
+
+class UserPay extends Equatable {
+  const UserPay({
     required this.id,
     required this.email,
     required this.phone,
@@ -14,4 +16,7 @@ class UserPay {
         'email': email,
         'phone': phone,
       };
+
+  @override
+  List<Object> get props => [id, email, phone];
 }

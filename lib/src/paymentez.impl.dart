@@ -8,40 +8,54 @@ import 'package:paymentez_sdk/utils/utils.dart';
 class PaymentezImpl implements IPaymentez {
   PaymentezImpl({
     required this.client,
-    required this.serverApplicationCode,
-    required this.serverAppKey,
-    required this.clientApplicationCode,
-    required this.clientAppKey,
+    required String applicationCode,
+    required String appKey,
     this.isProd = false,
-    this.isPCI = false,
-  });
+  })  : _applicationCode = applicationCode,
+        _appKey = appKey;
 
-  final String serverApplicationCode;
-  final String serverAppKey;
-  final String clientApplicationCode;
-  final String clientAppKey;
+  final String _applicationCode;
+  final String _appKey;
+
   final bool isProd;
-  final bool isPCI;
 
   final http.Client client;
 
   String get _host =>
-      isProd ? 'ccapi.paymentez.com ' : 'ccapi-stg.paymentez.com';
+      isProd ? 'ccapi.paymentez.com' : 'ccapi-stg.paymentez.com';
 
-  Map<String, String> _headers({bool isServer = false}) {
-    var appCode = isPCI ? serverApplicationCode : clientApplicationCode;
-    var appKey = isPCI ? serverAppKey : clientAppKey;
+  String get _hostMicro =>
+      isProd ? 'pg-micros.paymentez.com' : 'pg-micros-stg.paymentez.com';
 
-    if (!isPCI && isServer) {
-      appCode = serverApplicationCode;
-      appKey = serverAppKey;
+  Map<String, String> _headers({int? unixtime}) {
+    final authToken = PaymentezSecurity.getAuthToken(
+      appCode: _applicationCode,
+      appKey: _appKey,
+      unixtime: unixtime,
+    );
+
+    return {'Auth-Token': authToken, 'Content-Type': 'application/json'};
+  }
+
+  @override
+  Future<(AddCardResponse?, PaymentezError?)> addCardCC(
+    CardPCIRequest card,
+  ) async {
+    final url = Uri.https(_host, '/v2/card/add');
+    final response = await client.post(
+      url,
+      headers: _headers(),
+      body: json.encode(card.toJson()),
+    );
+
+    final body = json.decode(response.body) as Map<String, dynamic>;
+
+    if (response.statusCode == HttpStatus.ok) {
+      final result = AddCardResponse.fromJson(body);
+      return (result, null);
     }
 
-    final authToken = PaymentezSecurity.getAuthToken(
-      appCode: appCode,
-      appKey: appKey,
-    );
-    return {'Auth-Token': authToken, 'Content-Type': 'application/json'};
+    return (null, PaymentezError.fromJson(body));
   }
 
   @override
@@ -51,7 +65,7 @@ class PaymentezImpl implements IPaymentez {
     final url = Uri.https(_host, '/v2/card/list', {'uid': userID});
     final response = await client.get(
       url,
-      headers: _headers(isServer: true),
+      headers: _headers(),
     );
 
     final body = json.decode(response.body) as Map<String, dynamic>;
@@ -66,19 +80,61 @@ class PaymentezImpl implements IPaymentez {
 
   @override
   Future<(AddCardResponse?, PaymentezError?)> addCard(
-    AddCardRequest newCard,
+    CardRequest card,
   ) async {
-    final url = Uri.https(_host, '/v2/card/add');
+    final (unixtimeResp, unixtimeErr) = await _getUnixtime();
+    if (unixtimeErr != null) {
+      return (null, unixtimeErr);
+    }
+
+    final utilsBrowser = UtilsBrowser(isProd: isProd);
+
+    final model = GenerateTokenizeReq(
+      locale: card.locale,
+      user: card.user,
+      configuration: TokenizeConfiguration(
+        defaultCountry: 'ECU',
+        requireBillingAddress: card.requireBillingAddress,
+      ),
+      origin: 'SDK_JS',
+      antifraud: Antifraud(
+        sessionId: PaymentezSecurity.getSessionId(
+          unixtime: unixtimeResp!.unixtime,
+        ),
+        location: Uri.https(_host).toString(),
+        userAgent: utilsBrowser.getUserAgent(card.userAgent),
+      ),
+    );
+
+    final url = Uri.https(_host, '/v3/card/generate_tokenize/');
+    final headers = _headers(unixtime: unixtimeResp.unixtime);
+    final jsonBody = json.encode(model.toJson());
     final response = await client.post(
       url,
-      headers: _headers(),
-      body: json.encode(newCard.toJson()),
+      headers: headers,
+      body: jsonBody,
     );
 
     final body = json.decode(response.body) as Map<String, dynamic>;
-
     if (response.statusCode == HttpStatus.ok) {
       final result = AddCardResponse.fromJson(body);
+      return (result, null);
+    }
+
+    return (null, PaymentezError.fromJson(body));
+  }
+
+  Future<(UnixtimeResponse?, PaymentezError?)> _getUnixtime() async {
+    final url = Uri.https(_hostMicro, '/v1/unixtime');
+
+    final response = await client.get(
+      url,
+      headers: _headers(),
+    );
+
+    final body = json.decode(response.body) as Map<String, dynamic>;
+    if (response.statusCode == HttpStatus.ok) {
+      final result = UnixtimeResponse.fromJson(body);
       return (result, null);
     }
 
@@ -93,7 +149,7 @@ class PaymentezImpl implements IPaymentez {
 
     final response = await client.post(
       url,
-      headers: _headers(isServer: true),
+      headers: _headers(),
       body: json.encode(deleteCardRequest.toJson()),
     );
 
@@ -112,7 +168,7 @@ class PaymentezImpl implements IPaymentez {
 
     final response = await client.post(
       url,
-      headers: _headers(isServer: true),
+      headers: _headers(),
       body: json.encode(payRequest.toJson()),
     );
 

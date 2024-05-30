@@ -7,20 +7,14 @@ export 'models/models.dart';
 
 class PaymentezSDK implements IPaymentez {
   PaymentezSDK({
-    String serverApplicationCode = '',
-    String serverAppKey = '',
-    String clientApplicationCode = '',
-    String clientAppKey = '',
+    String applicationCode = '',
+    String appKey = '',
     bool isProd = false,
-    bool isPCI = false,
   }) : _svc = PaymentezImpl(
           client: http.Client(),
-          serverApplicationCode: serverApplicationCode,
-          serverAppKey: serverAppKey,
-          clientAppKey: clientAppKey,
-          clientApplicationCode: clientApplicationCode,
+          applicationCode: applicationCode,
+          appKey: appKey,
           isProd: isProd,
-          isPCI: isPCI,
         );
 
   final PaymentezImpl _svc;
@@ -30,8 +24,12 @@ class PaymentezSDK implements IPaymentez {
       _svc.getAllCards(userID);
 
   @override
-  Future<(AddCardResponse?, PaymentezError?)> addCard(AddCardRequest newCard) =>
+  Future<(AddCardResponse?, PaymentezError?)> addCard(CardRequest newCard) =>
       _svc.addCard(newCard);
+
+  @override
+  Future<(AddCardResponse?, PaymentezError?)> addCardCC(CardPCIRequest card) =>
+      _svc.addCardCC(card);
 
   @override
   Future<(DeleteCardResponse?, PaymentezError?)> deleteCard(

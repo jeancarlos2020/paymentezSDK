@@ -1,8 +1,8 @@
-import 'package:paymentez_sdk/models/request/pay/installments.dart';
+import 'package:equatable/equatable.dart';
 import 'package:paymentez_sdk/models/request/pay/installments_type.dart';
 
-class OrderPay {
-  OrderPay({
+class OrderPay extends Equatable {
+  const OrderPay({
     required this.taxPercentage,
     required this.taxableAmount,
     required this.vat,
@@ -18,7 +18,7 @@ class OrderPay {
   final double vat;
   final double amount;
   final String description;
-  final Installments? installments;
+  final int? installments;
   final InstallmentsType? installmentsType;
   final String devReference;
 
@@ -28,9 +28,23 @@ class OrderPay {
         'vat': vat,
         'amount': amount,
         'description': description,
-        if (installments != null) 'installments': installments!.value,
+        if (installments != null) 'installments': installments,
         if (installmentsType != null)
           'installments_type': installmentsType!.value,
         'dev_reference': devReference,
       };
+
+  @override
+  List<Object?> get props {
+    return [
+      taxPercentage,
+      taxableAmount,
+      vat,
+      amount,
+      description,
+      installments,
+      installmentsType,
+      devReference,
+    ];
+  }
 }

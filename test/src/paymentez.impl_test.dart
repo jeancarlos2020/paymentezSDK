@@ -8,48 +8,52 @@ import 'package:paymentez_sdk/utils/utils.dart';
 import 'package:test/test.dart';
 
 import '../helpers/helpers.dart';
+import '../mocks/mocks.dart';
 
 class MockHttpClient extends Mock implements http.Client {}
 
 void main() {
+  const applicationCode = 'mockAppCode';
+  const appKey = 'mockAppKey';
+
   late MockHttpClient mockHttpClient;
   late PaymentezImpl paymentez;
+  late Map<String, String> headerMock;
 
   setUp(() {
     mockHttpClient = MockHttpClient();
 
     paymentez = PaymentezImpl(
       client: mockHttpClient,
-      serverApplicationCode: 'serverAppCode',
-      serverAppKey: 'serverAppKey',
-      clientApplicationCode: 'clientAppCode',
-      clientAppKey: 'clientAppKey',
+      applicationCode: applicationCode,
+      appKey: appKey,
     );
+
+    headerMock = {
+      'Auth-Token': PaymentezSecurity.getAuthToken(
+        appCode: applicationCode,
+        appKey: appKey,
+      ),
+      'Content-Type': 'application/json',
+    };
   });
 
   group('Card', () {
     group('GetAllCards Method', () {
       test('Response Success', () async {
         final jsonResp = await Helpers.getJsonLocal(
-          'test/mock',
+          'test/response_mocks',
           'get_cards_success.json',
         );
 
         final mockURI =
             Uri.parse('https://ccapi-stg.paymentez.com/v2/card/list?uid=4');
 
-        final headerMock = {
-          'Auth-Token': PaymentezSecurity.getAuthToken(
-            appCode: paymentez.serverApplicationCode,
-            appKey: paymentez.serverAppKey,
-          ),
-          'Content-Type': 'application/json'
-        };
-
         when(() => mockHttpClient.get(mockURI, headers: headerMock)).thenAnswer(
           (_) async => http.Response(
             jsonResp,
             HttpStatus.ok,
+            headers: headerMock,
           ),
         );
 
@@ -62,25 +66,18 @@ void main() {
 
       test('Response Error', () async {
         final jsonResp = await Helpers.getJsonLocal(
-          'test/mock',
+          'test/response_mocks',
           'get_cards_error.json',
         );
 
         final mockURI =
             Uri.parse('https://ccapi-stg.paymentez.com/v2/card/list?uid=4');
 
-        final headerMock = {
-          'Auth-Token': PaymentezSecurity.getAuthToken(
-            appCode: paymentez.serverApplicationCode,
-            appKey: paymentez.serverAppKey,
-          ),
-          'Content-Type': 'application/json'
-        };
-
         when(() => mockHttpClient.get(mockURI, headers: headerMock)).thenAnswer(
           (_) async => http.Response(
             jsonResp,
             HttpStatus.unauthorized,
+            headers: headerMock,
           ),
         );
 
@@ -91,107 +88,174 @@ void main() {
       });
     });
 
-    group('AddCard Method', () {
+    group('AddCard no PCI Method', () {
       test('Response Success', () async {
-        final jsonResp = await Helpers.getJsonLocal(
-          'test/mock',
-          'add_card_success.json',
+        final mockHttpClient2 = MockHttpClient();
+
+        final sdk = PaymentezImpl(
+          client: mockHttpClient2,
+          applicationCode: applicationCode,
+          appKey: appKey,
+        );
+        // ++++++++++++++++++++++++++++++++++++++++//
+        // ************ GET UNIXTIME **************//
+        final mockUnixtimeURI = Uri.parse(
+          'https://pg-micros-stg.paymentez.com/v1/unixtime',
         );
 
-        final mockURI = Uri.parse(
-          'https://ccapi-stg.paymentez.com/v2/card/add',
+        final unixJsonResp = await Helpers.getJsonLocal(
+          'test/response_mocks',
+          'unixtime_success.json',
         );
-
-        final modelRequest = AddCardRequest(
-          user: UserCard(id: 'data_mock', email: 'data_mock'),
-          card: NewCard(
-            number: 'data_mock',
-            holderName: 'data_mock',
-            expiryMonth: 1,
-            expiryYear: 2023,
-            cvc: 'data_mock',
-          ),
-        );
-
-        final headerMock = {
-          'Auth-Token': PaymentezSecurity.getAuthToken(
-            appCode: paymentez.clientApplicationCode,
-            appKey: paymentez.clientAppKey,
-          ),
-          'Content-Type': 'application/json'
-        };
 
         when(
-          () => mockHttpClient.post(
-            mockURI,
+          () => mockHttpClient2.get(
+            mockUnixtimeURI,
             headers: headerMock,
-            body: json.encode(modelRequest.toJson()),
           ),
         ).thenAnswer(
           (_) async => http.Response(
-            jsonResp,
+            unixJsonResp,
             HttpStatus.ok,
+            headers: headerMock,
           ),
         );
 
-        final (result, err) = await paymentez.addCard(modelRequest);
+        final unixTime = (jsonDecode(unixJsonResp) as Map<String, dynamic>)
+            .getInt('unixtime');
 
+        // ++++++++++++++++++++++++++++++++++++++++//
+        // ************ TOKENIZED REQUEST *********//
+        final mockGeneralTokenizedURI = Uri.parse(
+          'https://ccapi-stg.paymentez.com/v3/card/generate_tokenize/',
+        );
+
+        final jsonRespData = await Helpers.getJsonLocal(
+          'test/response_mocks',
+          'add_request_tokenized.json',
+        );
+
+        final headerTokenizedMock = {
+          'Auth-Token': PaymentezSecurity.getAuthToken(
+            appCode: applicationCode,
+            appKey: appKey,
+            unixtime: unixTime,
+          ),
+          'Content-Type': 'application/json',
+        };
+
+        when(
+          () => mockHttpClient2.post(
+            mockGeneralTokenizedURI,
+            headers: headerTokenizedMock,
+            body: json.encode(
+              GenerateTokenizeReqMock.create(
+                unixtime: unixTime,
+              ).toJson(),
+            ),
+          ),
+        ).thenAnswer(
+          (_) async => http.Response(
+            jsonRespData,
+            HttpStatus.ok,
+            headers: headerTokenizedMock,
+          ),
+        );
+
+        // ++++++++++++++++++++++++++++++++++++++++//
+        // *************** UNIT TEST **************//
+        final cardToAdd = CardRequestMock.create();
+        final (result, err) = await sdk.addCard(cardToAdd);
         expect(err, isNull);
         expect(result, isA<AddCardResponse>());
+        if (result != null) {
+          expect(result.card, isNull);
+          expect(result.tokenizeURL, isNotEmpty);
+          expect(result.tokenizeURL, equals('https://www.host.com/form'));
+        }
       });
-      test('Response Error', () async {
-        final jsonResp = await Helpers.getJsonLocal(
-          'test/mock',
-          'add_card_error.json',
-        );
+    });
 
-        final mockURI = Uri.parse(
-          'https://ccapi-stg.paymentez.com/v2/card/add',
-        );
+    group('AddCard PCI', () {
+      test(
+        'Response Success',
+        () async {
+          final jsonResp = await Helpers.getJsonLocal(
+            'test/response_mocks',
+            'add_card_success.json',
+          );
 
-        final modelRequest = AddCardRequest(
-          user: UserCard(id: 'data_mock', email: 'data_mock'),
-          card: NewCard(
-            number: 'data_mock',
-            holderName: 'data_mock',
-            expiryMonth: 1,
-            expiryYear: 2023,
-            cvc: 'data_mock',
-          ),
-        );
+          final mockURI = Uri.parse(
+            'https://ccapi-stg.paymentez.com/v2/card/add',
+          );
 
-        final headerMock = {
-          'Auth-Token': PaymentezSecurity.getAuthToken(
-            appCode: paymentez.clientApplicationCode,
-            appKey: paymentez.clientAppKey,
-          ),
-          'Content-Type': 'application/json'
-        };
+          final cardToAdd = CardPCIRequestMock.create();
 
-        when(
-          () => mockHttpClient.post(
-            mockURI,
-            headers: headerMock,
-            body: json.encode(modelRequest.toJson()),
-          ),
-        ).thenAnswer(
-          (_) async => http.Response(
-            jsonResp,
-            HttpStatus.forbidden,
-          ),
-        );
+          when(
+            () => mockHttpClient.post(
+              mockURI,
+              headers: headerMock,
+              body: json.encode(cardToAdd.toJson()),
+            ),
+          ).thenAnswer(
+            (_) async => http.Response(
+              jsonResp,
+              HttpStatus.ok,
+              headers: headerMock,
+            ),
+          );
 
-        final (result, err) = await paymentez.addCard(modelRequest);
+          final (result, err) = await paymentez.addCardCC(
+            cardToAdd,
+          );
 
-        expect(result, isNull);
-        expect(err, isA<PaymentezError>());
-      });
+          expect(err, isNull);
+          expect(result, isA<AddCardResponse>());
+        },
+      );
+
+      test(
+        'Response error',
+        () async {
+          final jsonResp = await Helpers.getJsonLocal(
+            'test/response_mocks',
+            'add_card_error.json',
+          );
+
+          final mockURI = Uri.parse(
+            'https://ccapi-stg.paymentez.com/v2/card/add',
+          );
+
+          final cardToAdd = CardPCIRequestMock.create();
+
+          when(
+            () => mockHttpClient.post(
+              mockURI,
+              headers: headerMock,
+              body: json.encode(cardToAdd.toJson()),
+            ),
+          ).thenAnswer(
+            (_) async => http.Response(
+              jsonResp,
+              HttpStatus.forbidden,
+              headers: headerMock,
+            ),
+          );
+
+          final (result, err) = await paymentez.addCardCC(
+            cardToAdd,
+          );
+
+          expect(result, isNull);
+          expect(err, isA<PaymentezError>());
+        },
+      );
     });
 
     group('DeleteCard Method', () {
       test('Response Success', () async {
         final jsonResp = await Helpers.getJsonLocal(
-          'test/mock',
+          'test/response_mocks',
           'delete_card_success.json',
         );
 
@@ -199,18 +263,10 @@ void main() {
           'https://ccapi-stg.paymentez.com/v2/card/delete',
         );
 
-        final modelRequest = DeleteCardRequest(
+        const modelRequest = DeleteCardRequest(
           cardToken: 'data_mock',
           userId: 'data_mock',
         );
-
-        final headerMock = {
-          'Auth-Token': PaymentezSecurity.getAuthToken(
-            appCode: paymentez.serverApplicationCode,
-            appKey: paymentez.serverAppKey,
-          ),
-          'Content-Type': 'application/json'
-        };
 
         when(
           () => mockHttpClient.post(
@@ -222,11 +278,12 @@ void main() {
           (_) async => http.Response(
             jsonResp,
             HttpStatus.ok,
+            headers: headerMock,
           ),
         );
 
         final (result, err) = await paymentez.deleteCard(
-          deleteCardRequest: modelRequest,
+          modelRequest,
         );
 
         expect(err, isNull);
@@ -234,7 +291,7 @@ void main() {
       });
       test('Response Error', () async {
         final jsonResp = await Helpers.getJsonLocal(
-          'test/mock',
+          'test/response_mocks',
           'delete_card_error.json',
         );
 
@@ -242,18 +299,10 @@ void main() {
           'https://ccapi-stg.paymentez.com/v2/card/delete',
         );
 
-        final modelRequest = DeleteCardRequest(
+        const modelRequest = DeleteCardRequest(
           cardToken: 'data_mock',
           userId: 'data_mock',
         );
-
-        final headerMock = {
-          'Auth-Token': PaymentezSecurity.getAuthToken(
-            appCode: paymentez.serverApplicationCode,
-            appKey: paymentez.serverAppKey,
-          ),
-          'Content-Type': 'application/json'
-        };
 
         when(
           () => mockHttpClient.post(
@@ -265,11 +314,12 @@ void main() {
           (_) async => http.Response(
             jsonResp,
             HttpStatus.internalServerError,
+            headers: headerMock,
           ),
         );
 
         final (result, err) = await paymentez.deleteCard(
-          deleteCardRequest: modelRequest,
+          modelRequest,
         );
 
         expect(result, isNull);
@@ -277,10 +327,4 @@ void main() {
       });
     });
   });
-
-  group('Charge', () {});
-
-  group('Refund', () {});
-
-  group('Information', () {});
 }

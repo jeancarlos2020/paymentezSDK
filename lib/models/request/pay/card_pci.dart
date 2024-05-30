@@ -1,5 +1,7 @@
-class CardPCI {
-  CardPCI({
+import 'package:equatable/equatable.dart';
+
+class CardPCI extends Equatable {
+  const CardPCI({
     required this.number,
     required this.holderName,
     required this.expiryMonth,
@@ -20,4 +22,15 @@ class CardPCI {
         'expiry_year': expiryYear,
         'cvc': cvc,
       };
+
+  @override
+  List<Object> get props {
+    return [
+      number,
+      holderName,
+      expiryMonth,
+      expiryYear,
+      cvc,
+    ];
+  }
 }

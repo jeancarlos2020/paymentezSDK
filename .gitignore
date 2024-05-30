@@ -3,6 +3,9 @@
 pubspec.lock
 *.metadata
 *.zshrc
+build/*
 
 /coverage
 .vscode/*
+
+*.DS_Store

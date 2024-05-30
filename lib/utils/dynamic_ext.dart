@@ -27,15 +27,11 @@ extension DynamicExtensions on Map<String, dynamic> {
     }
 
     if (value is int) {
-      return int.parse(value.toString());
+      return value;
     }
 
     if (value is bool) {
       return value ? 1 : 0;
-    }
-
-    if (value is int) {
-      return value;
     }
 
     return 0;
